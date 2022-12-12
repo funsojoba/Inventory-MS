@@ -9,12 +9,21 @@ class Product(models.Model):
     description = models.TextField(blank=True, null=True)
     quantity = models.IntegerField(default=0)
     price = models.DecimalField(decimal_places=2, max_digits=10000)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-    def get_absolute_url(self):
-        return f"/products/{self.id}/"
+    class Meta:
+        ordering = ['-created_at']
 
-    def get_edit_url(self):
-        return f"/products/{self.id}/edit/"
 
-    def get_delete_url(self):
-        return f"/products/{self.id}/delete/"
+    def __str__(self):
+        return self.name
+
+
+
+class Cart(models.Model):
+    user = models.ForeignKey('auth.User', related_name='carts', on_delete=models.CASCADE)
+    products = models.ManyToManyField(Product, related_name='carts', blank=True)
+
+    def __str__(self):
+        return self.user.username
