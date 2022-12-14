@@ -1,6 +1,9 @@
 from rest_framework import viewsets
 from .models import Product
 
+from drf_yasg.utils import swagger_auto_schema
+from rest_framework.decorators import action
+
 from .serializers import ProductSerializer
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -44,6 +47,19 @@ class ProductViewed(viewsets.ViewSet):
 class CartViewset(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
+    @swagger_auto_schema(
+        # request_body=serializers.XlsxUploadSerializer,
+        methods=["post"],
+        operation_description="Import component data sheet",
+        operation_summary="Imports and stores a provider's component data sheet",
+        tags=["Components"],
+        # responses=schema_examples.CREATE_COMPONENT,
+    )
+    @action(
+        detail=False,
+        methods=["post"],
+        url_path="(?P<pk>[^/.]+)/add",
+    )
     def add_to_cart(self, request, pk=None):
         product = Product.objects.get(pk=pk)
         cart = Cart.objects.get(user=request.user)
